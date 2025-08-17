@@ -102,7 +102,12 @@ struct ContentView: View {
         .onChange(of: selectedImage) { oldValue, newImage in
             if let image = newImage {
                 // Check if this is a completely new image (not just a crop of the same image)
-                let isNewImage = oldValue == nil || !imagesAreSimilar(oldValue!, newImage)
+                let isNewImage: Bool
+                if let oldImage = oldValue {
+                    isNewImage = !imagesAreSimilar(oldImage, newImage)
+                } else {
+                    isNewImage = true // First image
+                }
                 
                 if isNewImage {
                     print("🆕 New image detected, resetting text and translation state")
