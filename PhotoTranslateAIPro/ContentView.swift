@@ -389,19 +389,26 @@ struct ContentView: View {
                 
                 Spacer()
                 
-                HStack(spacing: 4) {
-                    Text("→")
-                        .font(.caption)
-                        .foregroundColor(.blue)
-                    Text(selectedLanguage)
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundColor(.blue)
+                Button(action: {
+                    showingLanguagePicker = true
+                }) {
+                    HStack(spacing: 4) {
+                        Text("→")
+                            .font(.caption)
+                            .foregroundColor(.blue)
+                        Text(selectedLanguage)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(.blue)
+                        Image(systemName: "chevron.down")
+                            .font(.caption2)
+                            .foregroundColor(.blue)
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.blue.opacity(0.1))
+                    .cornerRadius(8)
                 }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(Color.blue.opacity(0.1))
-                .cornerRadius(8)
             }
             
             Text(translatedText)
@@ -412,22 +419,7 @@ struct ContentView: View {
                 .background(Color(.systemGray6))
                 .cornerRadius(12)
             
-            // Language change button
-            Button(action: {
-                showingLanguagePicker = true
-            }) {
-                HStack(spacing: 8) {
-                    Image(systemName: "arrow.triangle.2.circlepath")
-                        .font(.system(size: 14, weight: .medium))
-                    Text("Change Language")
-                        .font(.system(size: 14, weight: .medium))
-                }
-                .foregroundColor(.blue)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(Color.blue.opacity(0.1))
-                .cornerRadius(8)
-            }
+
         }
         .padding(20)
         .background(Color(.systemBackground))
