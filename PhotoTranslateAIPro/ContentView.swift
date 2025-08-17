@@ -26,7 +26,6 @@ struct ContentView: View {
     @State private var lastImageSource: String = "None" // Track if image came from camera or photo library
     @State private var showingResetMessage = false // Show message when state is reset
     @State private var previousImage: UIImage? = nil // Track previous image for comparison
-    @State private var showingDefaultLanguagePicker = false
 
     
     private let supportedLanguages = Array(Configuration.supportedLanguages.keys)
@@ -75,12 +74,6 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showingLanguagePicker) {
             LanguagePickerView(selectedLanguage: $selectedLanguage, languages: supportedLanguages)
-        }
-        .sheet(isPresented: $showingDefaultLanguagePicker) {
-            DefaultLanguagePickerView(
-                currentDefault: UserDefaults.standard.string(forKey: "DefaultTranslationLanguage") ?? "English",
-                languages: supportedLanguages
-            )
         }
         .sheet(isPresented: $showingMagicWandSelector) {
             if let image = selectedImage {
@@ -151,9 +144,6 @@ struct ContentView: View {
             print("📝 Current recognizedText: '\(recognizedText)'")
             print("🔮 textFromMagicWand flag: \(textFromMagicWand)")
             
-            // Save the new language as the default
-            saveDefaultLanguage(newLanguage)
-            
             if !recognizedText.isEmpty && !textFromMagicWand {
                 print("🚀 Triggering translation of recognized text (full image)")
                 translateText(recognizedText, to: newLanguage)
@@ -221,38 +211,6 @@ struct ContentView: View {
             }
             .padding(.horizontal, 20)
             .padding(.top, 10)
-            
-            // Default language indicator
-            HStack {
-                HStack(spacing: 6) {
-                    Image(systemName: "gear")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Text("Default:")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Text(UserDefaults.standard.string(forKey: "DefaultTranslationLanguage") ?? "English")
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundColor(.blue)
-                }
-                
-                Spacer()
-                
-                Button(action: {
-                    showingDefaultLanguagePicker = true
-                }) {
-                    Text("Change Default")
-                        .font(.caption)
-                        .foregroundColor(.blue)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.blue.opacity(0.1))
-                        .cornerRadius(8)
-                }
-            }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 10)
             
             Divider()
         }
@@ -453,6 +411,23 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color(.systemGray6))
                 .cornerRadius(12)
+            
+            // Language change button
+            Button(action: {
+                showingLanguagePicker = true
+            }) {
+                HStack(spacing: 8) {
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                        .font(.system(size: 14, weight: .medium))
+                    Text("Change Language")
+                        .font(.system(size: 14, weight: .medium))
+                }
+                .foregroundColor(.blue)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(Color.blue.opacity(0.1))
+                .cornerRadius(8)
+            }
         }
         .padding(20)
         .background(Color(.systemBackground))
@@ -558,10 +533,7 @@ struct ContentView: View {
         }
     }
     
-    private func saveDefaultLanguage(_ language: String) {
-        UserDefaults.standard.set(language, forKey: "DefaultTranslationLanguage")
-        print("💾 Default language saved: \(language)")
-    }
+
 }
 
 struct LanguagePickerView: View {
@@ -594,88 +566,6 @@ struct LanguagePickerView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
-                        dismiss()
-                    }
-                }
-            }
-        }
-    }
-}
-
-struct DefaultLanguagePickerView: View {
-    let currentDefault: String
-    let languages: [String]
-    @Environment(\.dismiss) private var dismiss
-    @State private var selectedDefault: String
-    
-    init(currentDefault: String, languages: [String]) {
-        self.currentDefault = currentDefault
-        self.languages = languages
-        self._selectedDefault = State(initialValue: currentDefault)
-    }
-    
-    var body: some View {
-        NavigationView {
-            VStack(spacing: 20) {
-                // Info text
-                VStack(spacing: 8) {
-                    Image(systemName: "gear.circle")
-                        .font(.system(size: 48))
-                        .foregroundColor(.blue)
-                    
-                    Text("Set Default Translation Language")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                    
-                    Text("This language will be used every time you open the app")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-                .padding(.top, 20)
-                
-                // Language list
-                List(languages, id: \.self) { language in
-                    Button(action: {
-                        selectedDefault = language
-                    }) {
-                        HStack {
-                            Text(language)
-                                .foregroundColor(.primary)
-                            
-                            Spacer()
-                            
-                            if language == selectedDefault {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .foregroundColor(.blue)
-                            }
-                        }
-                    }
-                }
-                
-                // Save button
-                Button(action: {
-                    UserDefaults.standard.set(selectedDefault, forKey: "DefaultTranslationLanguage")
-                    print("💾 Default language saved: \(selectedDefault)")
-                    dismiss()
-                }) {
-                    Text("Save as Default")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background(Color.blue)
-                        .cornerRadius(12)
-                }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 20)
-            }
-            .navigationTitle("Default Language")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
                         dismiss()
                     }
                 }
