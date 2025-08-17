@@ -25,6 +25,7 @@ struct ContentView: View {
     @State private var translationRefreshTrigger = false
     @State private var lastImageSource: String = "None" // Track if image came from camera or photo library
     @State private var showingResetMessage = false // Show message when state is reset
+    @State private var previousImage: UIImage? = nil // Track previous image for comparison
 
     
     private let supportedLanguages = Array(Configuration.supportedLanguages.keys)
@@ -99,12 +100,12 @@ struct ContentView: View {
                 .navigationViewStyle(StackNavigationViewStyle())
             }
         }
-        .onChange(of: selectedImage) { oldValue, newImage in
+        .onChange(of: selectedImage) { newImage in
             if let image = newImage {
                 // Check if this is a completely new image (not just a crop of the same image)
                 let isNewImage: Bool
-                if let oldImage = oldValue {
-                    isNewImage = !imagesAreSimilar(oldImage, newImage)
+                if let oldImage = previousImage {
+                    isNewImage = !imagesAreSimilar(oldImage, image)
                 } else {
                     isNewImage = true // First image
                 }
@@ -133,6 +134,9 @@ struct ContentView: View {
                         processImage(image)
                     }
                 }
+                
+                // Update the previous image for next comparison
+                previousImage = image
             }
         }
         .onChange(of: selectedLanguage) { oldValue, newLanguage in
