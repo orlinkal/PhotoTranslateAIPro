@@ -23,6 +23,7 @@ struct ContentView: View {
     @State private var showingMagicWandSelector = false
     @State private var textFromMagicWand = false
     @State private var translationRefreshTrigger = false
+
     
     private let supportedLanguages = Array(Configuration.supportedLanguages.keys)
     
@@ -66,7 +67,7 @@ struct ContentView: View {
             EnhancedImagePicker(selectedImage: $selectedImage, sourceType: .photoLibrary)
         }
         .sheet(isPresented: $showingCamera) {
-            EnhancedImagePicker(selectedImage: $selectedImage, sourceType: .camera)
+            ImagePicker(selectedImage: $selectedImage, sourceType: .camera)
         }
         .sheet(isPresented: $showingLanguagePicker) {
             LanguagePickerView(selectedLanguage: $selectedLanguage, languages: supportedLanguages)

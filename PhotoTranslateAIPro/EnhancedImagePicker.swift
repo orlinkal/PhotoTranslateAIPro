@@ -181,17 +181,40 @@ class EnhancedImagePickerViewController: UIViewController {
     
     private func setupImageSource() {
         if sourceType == .camera {
-            // For camera, we'll use the standard picker
-            let imagePicker = UIImagePickerController()
-            imagePicker.sourceType = .camera
-            imagePicker.delegate = self
-            imagePicker.cameraCaptureMode = .photo
-            imagePicker.allowsEditing = false // Don't allow editing in camera
-            present(imagePicker, animated: true)
+            // For camera, show a custom camera interface
+            showCustomCamera()
         } else {
             // For photo library, show the enhanced picker
             showPhotoLibrary()
         }
+    }
+    
+    private func showCustomCamera() {
+        // Create a custom camera interface
+        let cameraView = UIView()
+        cameraView.backgroundColor = .black
+        cameraView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(cameraView)
+        
+        let cameraLabel = UILabel()
+        cameraLabel.text = "Camera functionality will be handled by the parent view controller"
+        cameraLabel.textColor = .white
+        cameraLabel.textAlignment = .center
+        cameraLabel.numberOfLines = 0
+        cameraLabel.translatesAutoresizingMaskIntoConstraints = false
+        cameraView.addSubview(cameraLabel)
+        
+        NSLayoutConstraint.activate([
+            cameraView.topAnchor.constraint(equalTo: view.topAnchor),
+            cameraView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            cameraView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            cameraView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            cameraLabel.centerXAnchor.constraint(equalTo: cameraView.centerXAnchor),
+            cameraLabel.centerYAnchor.constraint(equalTo: cameraView.centerYAnchor),
+            cameraLabel.leadingAnchor.constraint(equalTo: cameraView.leadingAnchor, constant: 20),
+            cameraLabel.trailingAnchor.constraint(equalTo: cameraView.trailingAnchor, constant: -20)
+        ])
     }
     
     private func showPhotoLibrary() {
