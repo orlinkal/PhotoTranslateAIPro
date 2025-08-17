@@ -22,6 +22,12 @@ struct ContentView: View {
     
     private let supportedLanguages = Array(Configuration.supportedLanguages.keys)
     
+    // Debug: Print available languages
+    init() {
+        print("🌍 Available languages: \(Array(Configuration.supportedLanguages.keys))")
+        print("🌍 Language codes: \(Array(Configuration.supportedLanguages.values))")
+    }
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -284,9 +290,13 @@ struct ContentView: View {
     
     private func translateText(_ text: String, to language: String) {
         isProcessing = true
+        print("🔄 Starting translation...")
+        print("📝 Original text: '\(text)'")
+        print("🌍 Target language: '\(language)'")
         
         viewModel.translateText(text, to: language) { translated in
             DispatchQueue.main.async {
+                print("✅ Translation result: '\(translated)'")
                 self.translatedText = translated
                 self.isProcessing = false
             }

@@ -18,23 +18,15 @@ struct Configuration {
     
     // MARK: - Translation API Configuration
     
-    // Set to true to use real translation API, false for demo mode
-    static let useRealTranslationAPI = false
+    // Set to true to use real DeepL API, false for demo mode
+    static let useRealTranslationAPI = true
     
-    // Translation service configuration
-    struct TranslationAPI {
-        // Google Translate API
-        static let googleAPIKey = "YOUR_GOOGLE_API_KEY_HERE"
-        static let googleBaseURL = "https://translation.googleapis.com/language/translate/v2"
-        
-        // DeepL API
-        static let deepLAPIKey = "YOUR_DEEPL_API_KEY_HERE"
-        static let deepLBaseURL = "https://api-free.deepl.com/v2/translate"
-        
-        // Microsoft Translator
-        static let microsoftAPIKey = "YOUR_MICROSOFT_API_KEY_HERE"
-        static let microsoftBaseURL = "https://api.cognitive.microsofttranslator.com/translate"
-        static let microsoftRegion = "YOUR_AZURE_REGION_HERE"
+    // DeepL API key for real translations
+    static let deepLAPIKey = "6ad1b7b1-12f1-495b-97fa-a085aae23fd7"
+    
+    // Check if we have a valid API key
+    static var hasValidAPIKey: Bool {
+        return !deepLAPIKey.isEmpty && deepLAPIKey != "YOUR_DEEPL_API_KEY_HERE"
     }
     
     // MARK: - Text Recognition Configuration
@@ -75,12 +67,15 @@ struct Configuration {
     static let demoTranslations: [String: [String: String]] = [
         "es": [
             "Hello": "Hola",
+            "Hi": "Hola",
             "World": "Mundo",
             "Good morning": "Buenos días",
             "Thank you": "Gracias",
+            "Thanks": "Gracias",
             "Please": "Por favor",
             "Welcome": "Bienvenido",
             "Goodbye": "Adiós",
+            "Bye": "Adiós",
             "Yes": "Sí",
             "No": "No",
             "Help": "Ayuda",
@@ -88,16 +83,31 @@ struct Configuration {
             "I love you": "Te quiero",
             "Beautiful": "Hermoso",
             "Friend": "Amigo",
-            "Family": "Familia"
+            "Family": "Familia",
+            "Good": "Bueno",
+            "Bad": "Malo",
+            "Love": "Amor",
+            "Time": "Tiempo",
+            "Day": "Día",
+            "Night": "Noche",
+            "Water": "Agua",
+            "Food": "Comida",
+            "House": "Casa",
+            "Car": "Coche",
+            "Book": "Libro",
+            "Phone": "Teléfono"
         ],
         "fr": [
             "Hello": "Bonjour",
+            "Hi": "Salut",
             "World": "Monde",
             "Good morning": "Bonjour",
             "Thank you": "Merci",
+            "Thanks": "Merci",
             "Please": "S'il vous plaît",
             "Welcome": "Bienvenue",
             "Goodbye": "Au revoir",
+            "Bye": "Salut",
             "Yes": "Oui",
             "No": "Non",
             "Help": "Aide",
@@ -105,16 +115,31 @@ struct Configuration {
             "I love you": "Je t'aime",
             "Beautiful": "Beau",
             "Friend": "Ami",
-            "Family": "Famille"
+            "Family": "Famille",
+            "Good": "Bon",
+            "Bad": "Mauvais",
+            "Love": "Amour",
+            "Time": "Temps",
+            "Day": "Jour",
+            "Night": "Nuit",
+            "Water": "Eau",
+            "Food": "Nourriture",
+            "House": "Maison",
+            "Car": "Voiture",
+            "Book": "Livre",
+            "Phone": "Téléphone"
         ],
         "de": [
             "Hello": "Hallo",
+            "Hi": "Hallo",
             "World": "Welt",
             "Good morning": "Guten Morgen",
             "Thank you": "Danke",
+            "Thanks": "Danke",
             "Please": "Bitte",
             "Welcome": "Willkommen",
             "Goodbye": "Auf Wiedersehen",
+            "Bye": "Tschüss",
             "Yes": "Ja",
             "No": "Nein",
             "Help": "Hilfe",
@@ -122,7 +147,171 @@ struct Configuration {
             "I love you": "Ich liebe dich",
             "Beautiful": "Schön",
             "Friend": "Freund",
-            "Family": "Familie"
+            "Family": "Familie",
+            "Good": "Gut",
+            "Bad": "Schlecht",
+            "Love": "Liebe",
+            "Time": "Zeit",
+            "Day": "Tag",
+            "Night": "Nacht",
+            "Water": "Wasser",
+            "Food": "Essen",
+            "House": "Haus",
+            "Car": "Auto",
+            "Book": "Buch",
+            "Phone": "Telefon"
+        ],
+        "it": [
+            "Hello": "Ciao",
+            "Hi": "Ciao",
+            "Thank you": "Grazie",
+            "Please": "Per favore",
+            "Yes": "Sì",
+            "No": "No",
+            "Help": "Aiuto",
+            "Good": "Buono",
+            "Bad": "Cattivo",
+            "Love": "Amore",
+            "Time": "Tempo",
+            "Day": "Giorno",
+            "Night": "Notte",
+            "Water": "Acqua",
+            "Food": "Cibo",
+            "House": "Casa",
+            "Car": "Auto",
+            "Book": "Libro",
+            "Phone": "Telefono"
+        ],
+        "pt": [
+            "Hello": "Olá",
+            "Hi": "Oi",
+            "Thank you": "Obrigado",
+            "Please": "Por favor",
+            "Yes": "Sim",
+            "No": "Não",
+            "Help": "Ajuda",
+            "Good": "Bom",
+            "Bad": "Mau",
+            "Love": "Amor",
+            "Time": "Tempo",
+            "Day": "Dia",
+            "Night": "Noite",
+            "Water": "Água",
+            "Food": "Comida",
+            "House": "Casa",
+            "Car": "Carro",
+            "Book": "Livro",
+            "Phone": "Telefone"
+        ],
+        "ko": [
+            "Hello": "안녕하세요",
+            "Hi": "안녕",
+            "Thank you": "감사합니다",
+            "Thanks": "고마워",
+            "Please": "제발",
+            "Yes": "네",
+            "No": "아니요",
+            "Help": "도와주세요",
+            "Good": "좋은",
+            "Bad": "나쁜",
+            "Love": "사랑",
+            "Time": "시간",
+            "Day": "하루",
+            "Night": "밤",
+            "Water": "물",
+            "Food": "음식",
+            "House": "집",
+            "Car": "자동차",
+            "Book": "책",
+            "Phone": "전화"
+        ],
+        "zh": [
+            "Hello": "你好",
+            "Hi": "嗨",
+            "Thank you": "谢谢",
+            "Thanks": "谢谢",
+            "Please": "请",
+            "Yes": "是",
+            "No": "不",
+            "Help": "帮助",
+            "Good": "好",
+            "Bad": "坏",
+            "Love": "爱",
+            "Time": "时间",
+            "Day": "天",
+            "Night": "夜",
+            "Water": "水",
+            "Food": "食物",
+            "House": "房子",
+            "Car": "汽车",
+            "Book": "书",
+            "Phone": "电话"
+        ],
+        "ja": [
+            "Hello": "こんにちは",
+            "Hi": "やあ",
+            "Thank you": "ありがとう",
+            "Thanks": "ありがとう",
+            "Please": "お願いします",
+            "Yes": "はい",
+            "No": "いいえ",
+            "Help": "助けて",
+            "Good": "良い",
+            "Bad": "悪い",
+            "Love": "愛",
+            "Time": "時間",
+            "Day": "日",
+            "Night": "夜",
+            "Water": "水",
+            "Food": "食べ物",
+            "House": "家",
+            "Car": "車",
+            "Book": "本",
+            "Phone": "電話"
+        ],
+        "ar": [
+            "Hello": "مرحبا",
+            "Hi": "أهلا",
+            "Thank you": "شكرا لك",
+            "Thanks": "شكرا",
+            "Please": "من فضلك",
+            "Yes": "نعم",
+            "No": "لا",
+            "Help": "مساعدة",
+            "Good": "جيد",
+            "Bad": "سيء",
+            "Love": "حب",
+            "Time": "وقت",
+            "Day": "يوم",
+            "Night": "ليل",
+            "Water": "ماء",
+            "Food": "طعام",
+            "House": "بيت",
+            "Car": "سيارة",
+            "Book": "كتاب",
+            "Phone": "هاتف"
+        ],
+        "ru": [
+            "Hello": "Привет",
+            "Hi": "Привет",
+            "Thank you": "Спасибо",
+            "Thanks": "Спасибо",
+            "Please": "Пожалуйста",
+            "Yes": "Да",
+            "No": "Нет",
+            "Help": "Помощь",
+            "Good": "Хорошо",
+            "Bad": "Плохо",
+            "Love": "Любовь",
+            "Time": "Время",
+            "Day": "День",
+            "Night": "Ночь",
+            "Water": "Вода",
+            "Food": "Еда",
+            "House": "Дом",
+            "Car": "Машина",
+            "Book": "Книга",
+            "Phone": "Телефон"
         ]
     ]
     
@@ -142,6 +331,23 @@ struct Configuration {
             }
         }
         
-        return nil
+        // If no exact matches, try to translate common phrases
+        let lowercasedText = text.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // Check for common phrases
+        if lowercasedText == "hello" || lowercasedText == "hi" {
+            return languageTranslations["Hello"] ?? "[\(languageCode.uppercased())] \(text)"
+        }
+        
+        if lowercasedText == "thank you" || lowercasedText == "thanks" {
+            return languageTranslations["Thank you"] ?? "[\(languageCode.uppercased())] \(text)"
+        }
+        
+        if lowercasedText == "good morning" || lowercasedText == "goodmorning" {
+            return languageTranslations["Good morning"] ?? "[\(languageCode.uppercased())] \(text)"
+        }
+        
+        // If still no match, return a simulated translation
+        return "[\(languageCode.uppercased())] \(text)"
     }
 }

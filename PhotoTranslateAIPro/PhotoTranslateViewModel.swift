@@ -11,6 +11,24 @@ import UIKit
 
 class PhotoTranslateViewModel: ObservableObject {
     
+    private let deepLService: DeepLTranslationService?
+    
+    init() {
+        // Initialize DeepL service if API key is available
+        print("🔧 Initializing PhotoTranslateViewModel...")
+        print("🔑 API Key available: \(Configuration.hasValidAPIKey)")
+        print("🚀 Use Real API: \(Configuration.useRealTranslationAPI)")
+        print("🔑 API Key: \(Configuration.deepLAPIKey)")
+        
+        if Configuration.hasValidAPIKey {
+            self.deepLService = DeepLTranslationService(apiKey: Configuration.deepLAPIKey)
+            print("✅ DeepL service initialized successfully")
+        } else {
+            self.deepLService = nil
+            print("❌ DeepL service not initialized - no valid API key")
+        }
+    }
+    
     // MARK: - Text Recognition
     
     func recognizeText(in image: UIImage, completion: @escaping (String) -> Void) {
@@ -64,14 +82,39 @@ class PhotoTranslateViewModel: ObservableObject {
     // MARK: - Translation
     
     func translateText(_ text: String, to language: String, completion: @escaping (String) -> Void) {
-        // For demo purposes, we'll use a simple translation service
-        // In a real app, you would integrate with Google Translate API, DeepL, or similar
+        print("🔍 Translation request - Text: '\(text)', Language: '\(language)'")
+        print("🔑 DeepL service available: \(deepLService != nil)")
+        print("🚀 Use Real API setting: \(Configuration.useRealTranslationAPI)")
         
+        // Check if we have DeepL API available
+        if let deepLService = deepLService, Configuration.useRealTranslationAPI {
+            print("🚀 Using DeepL API for translation")
+            deepLService.translate(text: text, to: language) { result in
+                switch result {
+                case .success(let translatedText):
+                    print("✅ DeepL translation result: '\(translatedText)'")
+                    completion(translatedText)
+                case .failure(let error):
+                    print("❌ DeepL translation failed: \(error.localizedDescription)")
+                    // Fallback to demo translation
+                    self.fallbackToDemoTranslation(text, to: language, completion: completion)
+                }
+            }
+        } else {
+            print("🔄 Using demo translation (DeepL API not available)")
+            print("🔍 Reason: deepLService=\(deepLService != nil), useRealAPI=\(Configuration.useRealTranslationAPI)")
+            fallbackToDemoTranslation(text, to: language, completion: completion)
+        }
+    }
+    
+    private func fallbackToDemoTranslation(_ text: String, to language: String, completion: @escaping (String) -> Void) {
         let targetLanguage = getLanguageCode(for: language)
+        print("🔤 Language code for '\(language)': '\(targetLanguage)'")
         
         // Simulate API call delay
         DispatchQueue.global().asyncAfter(deadline: .now() + 1.0) {
             let translatedText = self.simulateTranslation(text, to: targetLanguage)
+            print("🔄 Demo translation result: '\(translatedText)'")
             completion(translatedText)
         }
     }
@@ -81,11 +124,15 @@ class PhotoTranslateViewModel: ObservableObject {
     }
     
     private func simulateTranslation(_ text: String, to languageCode: String) -> String {
+        print("🔍 Looking for translation of '\(text)' to '\(languageCode)'")
+        
         // Use the configuration for demo translations
         if let translation = Configuration.getDemoTranslation(for: text, to: languageCode) {
+            print("✅ Found demo translation: '\(translation)'")
             return translation
         }
         
+        print("❌ No demo translation found, using fallback")
         // If no exact matches, return a simulated translation
         return "[\(languageCode.uppercased())] \(text)"
     }
