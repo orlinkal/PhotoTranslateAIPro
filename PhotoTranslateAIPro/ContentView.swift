@@ -23,6 +23,8 @@ struct ContentView: View {
     @State private var showingMagicWandSelector = false
     @State private var textFromMagicWand = false
     @State private var translationRefreshTrigger = false
+    @State private var lastImageSource: String = "None" // Track if image came from camera or photo library
+    @State private var showingResetMessage = false // Show message when state is reset
 
     
     private let supportedLanguages = Array(Configuration.supportedLanguages.keys)
@@ -99,11 +101,32 @@ struct ContentView: View {
         }
         .onChange(of: selectedImage) { oldValue, newImage in
             if let image = newImage {
-                // Reset magic wand flag for new image
-                textFromMagicWand = false
-                // Only process the full image if we don't have recognized text from magic wand
-                if recognizedText.isEmpty && !textFromMagicWand {
+                // Check if this is a completely new image (not just a crop of the same image)
+                let isNewImage = oldValue == nil || !imagesAreSimilar(oldValue!, newImage)
+                
+                if isNewImage {
+                    print("🆕 New image detected, resetting text and translation state")
+                    // Reset all text-related state for new image
+                    recognizedText = ""
+                    translatedText = ""
+                    textFromMagicWand = false
+                    translationRefreshTrigger = false
+                    detectedLanguage = "Unknown"
+                    isProcessing = false
+                    
+                    // Show reset message
+                    showingResetMessage = true
+                    
+                    // Process the new image
                     processImage(image)
+                } else {
+                    print("🔄 Same image detected (likely cropped), keeping existing text")
+                    // Reset magic wand flag for same image
+                    textFromMagicWand = false
+                    // Only process if we don't have recognized text from magic wand
+                    if recognizedText.isEmpty && !textFromMagicWand {
+                        processImage(image)
+                    }
                 }
             }
         }
@@ -312,6 +335,26 @@ struct ContentView: View {
                 }
             }
             
+            if showingResetMessage {
+                HStack {
+                    Image(systemName: "arrow.clockwise")
+                        .foregroundColor(.blue)
+                    Text("Image changed - text recognition reset")
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Color.blue.opacity(0.1))
+                .cornerRadius(8)
+                .onAppear {
+                    // Hide the message after 3 seconds
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                        showingResetMessage = false
+                    }
+                }
+            }
+            
             Text(recognizedText)
                 .font(.body)
                 .foregroundColor(.primary)
@@ -393,6 +436,29 @@ struct ContentView: View {
                 }
             }
         }
+    }
+    
+    private func imagesAreSimilar(_ image1: UIImage, _ image2: UIImage) -> Bool {
+        // Simple heuristic: if the images have very similar dimensions and aspect ratios,
+        // they're likely the same image (possibly cropped)
+        let size1 = image1.size
+        let size2 = image2.size
+        
+        let aspectRatio1 = size1.width / size1.height
+        let aspectRatio2 = size2.width / size2.height
+        
+        let sizeDifference = abs(size1.width - size2.width) + abs(size1.height - size2.height)
+        let aspectRatioDifference = abs(aspectRatio1 - aspectRatio2)
+        
+        // If dimensions are very close and aspect ratios are similar, likely same image
+        let isSimilarSize = sizeDifference < 100 // Allow 100px total difference
+        let isSimilarAspectRatio = aspectRatioDifference < 0.1 // Allow 10% aspect ratio difference
+        
+        print("🔍 Image comparison: size diff=\(sizeDifference), aspect diff=\(aspectRatioDifference)")
+        print("🔍 Size1: \(size1), Size2: \(size2)")
+        print("🔍 Similar: \(isSimilarSize && isSimilarAspectRatio)")
+        
+        return isSimilarSize && isSimilarAspectRatio
     }
     
     private func detectLanguage(_ text: String) {
