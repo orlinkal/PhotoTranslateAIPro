@@ -79,6 +79,7 @@ class EnhancedImagePickerViewController: UIViewController {
         scrollView.showsVerticalScrollIndicator = false
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.isHidden = true // Initially hidden for camera
         view.addSubview(scrollView)
         
         // Add double-tap gesture for quick zoom
@@ -97,6 +98,7 @@ class EnhancedImagePickerViewController: UIViewController {
         cropOverlay.backgroundColor = UIColor.clear
         cropOverlay.isUserInteractionEnabled = false
         cropOverlay.translatesAutoresizingMaskIntoConstraints = false
+        cropOverlay.isHidden = true // Initially hidden for camera
         view.addSubview(cropOverlay)
         
         // Setup instruction label
@@ -109,10 +111,12 @@ class EnhancedImagePickerViewController: UIViewController {
         instructionLabel.layer.masksToBounds = true
         instructionLabel.numberOfLines = 0
         instructionLabel.translatesAutoresizingMaskIntoConstraints = false
+        instructionLabel.isHidden = true // Initially hidden for camera
         view.addSubview(instructionLabel)
         
         // Setup toolbar
         toolbar.translatesAutoresizingMaskIntoConstraints = false
+        toolbar.isHidden = true // Initially hidden for camera
         view.addSubview(toolbar)
         
         // Setup buttons
@@ -123,6 +127,7 @@ class EnhancedImagePickerViewController: UIViewController {
         selectButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         selectButton.addTarget(self, action: #selector(selectButtonTapped), for: .touchUpInside)
         selectButton.translatesAutoresizingMaskIntoConstraints = false
+        selectButton.isEnabled = false // Initially disabled
         toolbar.addSubview(selectButton)
         
         cancelButton.setTitle("Cancel", for: .normal)
@@ -181,6 +186,7 @@ class EnhancedImagePickerViewController: UIViewController {
             imagePicker.sourceType = .camera
             imagePicker.delegate = self
             imagePicker.cameraCaptureMode = .photo
+            imagePicker.allowsEditing = false // Don't allow editing in camera
             present(imagePicker, animated: true)
         } else {
             // For photo library, show the enhanced picker
@@ -193,7 +199,10 @@ class EnhancedImagePickerViewController: UIViewController {
         imagePicker.sourceType = .photoLibrary
         imagePicker.delegate = self
         imagePicker.allowsEditing = false
-        present(imagePicker, animated: true)
+        present(imagePicker, animated: true) {
+            // For photo library, we'll show the interface after selection
+            // The interface is already set up but hidden
+        }
     }
     
     @objc private func selectButtonTapped() {
@@ -356,10 +365,25 @@ extension EnhancedImagePickerViewController: UIImagePickerControllerDelegate, UI
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true) {
             if let image = info[.originalImage] as? UIImage {
+                // Show the enhanced cropping interface for the captured photo
                 self.imageView.image = image
                 self.selectButton.isEnabled = true
                 self.selectButton.backgroundColor = UIColor.systemGreen
                 self.selectButton.setTitle("Crop & Use Photo", for: .normal)
+                
+                // Determine if this is from camera or photo library
+                let isFromCamera = picker.sourceType == .camera
+                if isFromCamera {
+                    self.instructionLabel.text = "Review and crop your photo. Only visible area will be captured."
+                } else {
+                    self.instructionLabel.text = "Zoom and position to crop. Only visible area will be captured."
+                }
+                
+                // Show the enhanced interface
+                self.scrollView.isHidden = false
+                self.toolbar.isHidden = false
+                self.cropOverlay.isHidden = false
+                self.instructionLabel.isHidden = false
             }
         }
     }
