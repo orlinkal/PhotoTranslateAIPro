@@ -120,7 +120,7 @@ class EnhancedImagePickerViewController: UIViewController {
         view.addSubview(toolbar)
         
         // Setup buttons
-        selectButton.setTitle("Crop & Use Photo", for: .normal)
+        selectButton.setTitle("Crop", for: .normal)
         selectButton.setTitleColor(.white, for: .normal)
         selectButton.backgroundColor = UIColor.systemBlue
         selectButton.layer.cornerRadius = 12
@@ -392,7 +392,7 @@ extension EnhancedImagePickerViewController: UIImagePickerControllerDelegate, UI
                 self.imageView.image = image
                 self.selectButton.isEnabled = true
                 self.selectButton.backgroundColor = UIColor.systemGreen
-                self.selectButton.setTitle("Crop & Use Photo", for: .normal)
+                self.selectButton.setTitle("Crop", for: .normal)
                 
                 // Determine if this is from camera or photo library
                 let isFromCamera = picker.sourceType == .camera
