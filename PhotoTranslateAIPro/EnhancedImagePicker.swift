@@ -198,8 +198,15 @@ class EnhancedImagePickerViewController: UIViewController {
     
     @objc private func selectButtonTapped() {
         if let image = imageView.image {
+            print("🔍 Original image orientation: \(image.imageOrientation.rawValue)")
+            print("🔍 Original image size: \(image.size)")
+            
             // Crop the image to only the visible portion based on current zoom and scroll position
             let croppedImage = cropImageToVisibleArea(image)
+            
+            print("🔍 Cropped image orientation: \(croppedImage.imageOrientation.rawValue)")
+            print("🔍 Cropped image size: \(croppedImage.size)")
+            
             delegate?.enhancedImagePicker(self, didSelectImage: croppedImage)
         }
     }
@@ -243,12 +250,39 @@ class EnhancedImagePickerViewController: UIViewController {
             height: min(cropRect.height, imageSize.height - max(0, cropRect.origin.y))
         )
         
-        // Perform the actual cropping
+        // Perform the actual cropping with proper orientation handling
         guard let cgImage = image.cgImage?.cropping(to: finalCropRect) else {
             return image // Fallback to original if cropping fails
         }
         
-        return UIImage(cgImage: cgImage)
+        // Create a new UIImage with the cropped CGImage and preserve the original orientation
+        let croppedImage = UIImage(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
+        
+        // If the image has a non-standard orientation, normalize it
+        if image.imageOrientation != .up {
+            return normalizeImageOrientation(croppedImage)
+        }
+        
+        return croppedImage
+    }
+    
+    private func normalizeImageOrientation(_ image: UIImage) -> UIImage {
+        print("🔄 Normalizing image orientation from: \(image.imageOrientation.rawValue)")
+        
+        // If the image is already in the correct orientation, return it
+        if image.imageOrientation == .up {
+            print("✅ Image already in correct orientation")
+            return image
+        }
+        
+        // Create a graphics context to draw the image in the correct orientation
+        UIGraphicsBeginImageContextWithOptions(image.size, false, image.scale)
+        image.draw(in: CGRect(origin: .zero, size: image.size))
+        let normalizedImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        print("✅ Image normalized to orientation: \(normalizedImage?.imageOrientation.rawValue ?? -1)")
+        return normalizedImage ?? image
     }
     
     @objc private func cancelButtonTapped() {
