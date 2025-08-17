@@ -50,10 +50,11 @@ protocol MagicWandViewControllerDelegate: AnyObject {
     func magicWandViewControllerDidCancel(_ controller: MagicWandViewController)
 }
 
-class MagicWandViewController: UIViewController {
+class MagicWandViewController: UIViewController, UIScrollViewDelegate {
     private let image: UIImage
     weak var delegate: MagicWandViewControllerDelegate?
     
+    private let scrollView = UIScrollView()
     private let imageView = UIImageView()
     private let drawingView = DrawingView()
     private let selectionOverlayView = SelectionOverlayView()
@@ -82,11 +83,25 @@ class MagicWandViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = .black
         
-        // Setup image view
+        // Setup scroll view with zoom capabilities
+        scrollView.delegate = self
+        scrollView.minimumZoomScale = 1.0
+        scrollView.maximumZoomScale = 4.0
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+        
+        // Add double-tap gesture for quick zoom
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
+        doubleTapGesture.numberOfTapsRequired = 2
+        scrollView.addGestureRecognizer(doubleTapGesture)
+        
+        // Setup image view inside scroll view
         imageView.image = image
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(imageView)
+        scrollView.addSubview(imageView)
         
         // Setup drawing view for finger input
         drawingView.translatesAutoresizingMaskIntoConstraints = false
@@ -120,10 +135,17 @@ class MagicWandViewController: UIViewController {
         print("🔘 Button actions: \(selectTextButton.actions(forTarget: self, forControlEvent: .touchUpInside) ?? [])")
         
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            imageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            
+            imageView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            imageView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            imageView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            imageView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            imageView.heightAnchor.constraint(equalTo: scrollView.heightAnchor),
             
             drawingView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             drawingView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -139,7 +161,7 @@ class MagicWandViewController: UIViewController {
             
             selectTextButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             selectTextButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40),
-            selectTextButton.widthAnchor.constraint(equalToConstant: 200),
+            selectTextButton.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -40),
             selectTextButton.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
@@ -232,6 +254,16 @@ class MagicWandViewController: UIViewController {
     @objc private func magicWandTapped() {
         // Auto-detect text areas and suggest selection
         autoDetectTextAreas()
+    }
+    
+    @objc private func handleDoubleTap(_ gesture: UITapGestureRecognizer) {
+        if scrollView.zoomScale > scrollView.minimumZoomScale {
+            // Zoom out to minimum
+            scrollView.setZoomScale(scrollView.minimumZoomScale, animated: true)
+        } else {
+            // Zoom in to maximum
+            scrollView.setZoomScale(scrollView.maximumZoomScale, animated: true)
+        }
     }
     
     private func autoDetectTextAreas() {
@@ -415,6 +447,34 @@ class MagicWandViewController: UIViewController {
                 self.delegate?.magicWandViewController(self, didSelectText: "Error processing selection")
             }
         }
+    }
+}
+
+// MARK: - UIScrollViewDelegate Extension
+
+extension MagicWandViewController {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return imageView
+    }
+    
+    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        // Center the image when zooming
+        let boundsSize = scrollView.bounds.size
+        var frameToCenter = imageView.frame
+        
+        if frameToCenter.size.width < boundsSize.width {
+            frameToCenter.origin.x = (boundsSize.width - frameToCenter.size.width) / 2
+        } else {
+            frameToCenter.origin.x = 0
+        }
+        
+        if frameToCenter.size.height < boundsSize.height {
+            frameToCenter.origin.y = (boundsSize.height - frameToCenter.size.height) / 2
+        } else {
+            frameToCenter.origin.y = 0
+        }
+        
+        imageView.frame = frameToCenter
     }
 }
 

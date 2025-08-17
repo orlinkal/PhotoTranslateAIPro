@@ -63,10 +63,10 @@ struct ContentView: View {
             .navigationBarHidden(true)
         }
         .sheet(isPresented: $showingImagePicker) {
-            ImagePicker(selectedImage: $selectedImage, sourceType: .photoLibrary)
+            EnhancedImagePicker(selectedImage: $selectedImage, sourceType: .photoLibrary)
         }
         .sheet(isPresented: $showingCamera) {
-            ImagePicker(selectedImage: $selectedImage, sourceType: .camera)
+            EnhancedImagePicker(selectedImage: $selectedImage, sourceType: .camera)
         }
         .sheet(isPresented: $showingLanguagePicker) {
             LanguagePickerView(selectedLanguage: $selectedLanguage, languages: supportedLanguages)
