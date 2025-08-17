@@ -74,18 +74,42 @@ class DeepLTranslationService {
     }
     
     private func convertToDeepLLanguageCode(_ language: String) -> String {
-        // DeepL language codes mapping
+        // DeepL language codes mapping (full support)
         let languageMapping: [String: String] = [
-            "Spanish": "ES",
+            // European Languages
+            "Bulgarian": "BG",
+            "Czech": "CS",
+            "Danish": "DA",
+            "Dutch": "NL",
+            "English": "EN",
+            "Estonian": "ET",
+            "Finnish": "FI",
             "French": "FR",
             "German": "DE",
+            "Greek": "EL",
+            "Hungarian": "HU",
             "Italian": "IT",
+            "Latvian": "LV",
+            "Lithuanian": "LT",
+            "Norwegian": "NO",
+            "Polish": "PL",
             "Portuguese": "PT",
+            "Romanian": "RO",
             "Russian": "RU",
+            "Slovak": "SK",
+            "Slovenian": "SL",
+            "Spanish": "ES",
+            "Swedish": "SV",
+            
+            // Asian Languages
+            "Chinese (Simplified)": "ZH",
+            "Indonesian": "ID",
             "Japanese": "JA",
-            "Chinese": "ZH",
             "Korean": "KO",
-            "Arabic": "AR"
+            
+            // Other Languages
+            "Turkish": "TR",
+            "Ukrainian": "UK"
         ]
         
         return languageMapping[language] ?? "EN"

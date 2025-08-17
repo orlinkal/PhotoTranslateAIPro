@@ -47,19 +47,43 @@ struct Configuration {
         static let maxImageHeight: CGFloat = 300
     }
     
-    // MARK: - Supported Languages
+    // MARK: - Supported Languages (DeepL Full Support)
     
     static let supportedLanguages = [
-        "Spanish": "es",
-        "French": "fr", 
+        // European Languages
+        "Bulgarian": "bg",
+        "Czech": "cs",
+        "Danish": "da",
+        "Dutch": "nl",
+        "English": "en",
+        "Estonian": "et",
+        "Finnish": "fi",
+        "French": "fr",
         "German": "de",
+        "Greek": "el",
+        "Hungarian": "hu",
         "Italian": "it",
+        "Latvian": "lv",
+        "Lithuanian": "lt",
+        "Norwegian": "no",
+        "Polish": "pl",
         "Portuguese": "pt",
+        "Romanian": "ro",
         "Russian": "ru",
+        "Slovak": "sk",
+        "Slovenian": "sl",
+        "Spanish": "es",
+        "Swedish": "sv",
+        
+        // Asian Languages
+        "Chinese (Simplified)": "zh",
+        "Indonesian": "id",
         "Japanese": "ja",
         "Korean": "ko",
-        "Chinese": "zh",
-        "Arabic": "ar"
+        
+        // Other Languages
+        "Turkish": "tr",
+        "Ukrainian": "uk"
     ]
     
     // MARK: - Demo Translations
@@ -246,6 +270,126 @@ struct Configuration {
             "Car": "汽车",
             "Book": "书",
             "Phone": "电话"
+        ],
+        "bg": [
+            "Hello": "Здравейте",
+            "Thank you": "Благодаря",
+            "Yes": "Да",
+            "No": "Не"
+        ],
+        "cs": [
+            "Hello": "Ahoj",
+            "Thank you": "Děkuji",
+            "Yes": "Ano",
+            "No": "Ne"
+        ],
+        "da": [
+            "Hello": "Hej",
+            "Thank you": "Tak",
+            "Yes": "Ja",
+            "No": "Nej"
+        ],
+        "nl": [
+            "Hello": "Hallo",
+            "Thank you": "Bedankt",
+            "Yes": "Ja",
+            "No": "Nee"
+        ],
+        "en": [
+            "Hello": "Hello",
+            "Thank you": "Thank you",
+            "Yes": "Yes",
+            "No": "No"
+        ],
+        "et": [
+            "Hello": "Tere",
+            "Thank you": "Aitäh",
+            "Yes": "Jah",
+            "No": "Ei"
+        ],
+        "fi": [
+            "Hello": "Hei",
+            "Thank you": "Kiitos",
+            "Yes": "Kyllä",
+            "No": "Ei"
+        ],
+        "el": [
+            "Hello": "Γεια σας",
+            "Thank you": "Ευχαριστώ",
+            "Yes": "Ναι",
+            "No": "Όχι"
+        ],
+        "hu": [
+            "Hello": "Üdvözlöm",
+            "Thank you": "Köszönöm",
+            "Yes": "Igen",
+            "No": "Nem"
+        ],
+        "lv": [
+            "Hello": "Sveiki",
+            "Thank you": "Paldies",
+            "Yes": "Jā",
+            "No": "Nē"
+        ],
+        "lt": [
+            "Hello": "Sveiki",
+            "Thank you": "Ačiū",
+            "Yes": "Taip",
+            "No": "Ne"
+        ],
+        "no": [
+            "Hello": "Hei",
+            "Thank you": "Takk",
+            "Yes": "Ja",
+            "No": "Nei"
+        ],
+        "pl": [
+            "Hello": "Cześć",
+            "Thank you": "Dziękuję",
+            "Yes": "Tak",
+            "No": "Nie"
+        ],
+        "ro": [
+            "Hello": "Bună",
+            "Thank you": "Mulțumesc",
+            "Yes": "Da",
+            "No": "Nu"
+        ],
+        "sk": [
+            "Hello": "Ahoj",
+            "Thank you": "Ďakujem",
+            "Yes": "Áno",
+            "No": "Nie"
+        ],
+        "sl": [
+            "Hello": "Pozdravljeni",
+            "Thank you": "Hvala",
+            "Yes": "Da",
+            "No": "Ne"
+        ],
+        "sv": [
+            "Hello": "Hej",
+            "Thank you": "Tack",
+            "Yes": "Ja",
+            "No": "Nej"
+        ],
+        "id": [
+            "Hello": "Halo",
+            "Thank you": "Terima kasih",
+            "Yes": "Ya",
+            "No": "Tidak"
+        ],
+        "tr": [
+            "Hello": "Merhaba",
+            "Thank you": "Teşekkürler",
+            "Yes": "Evet",
+            "No": "Hayır"
+        ],
+        "uk": [
+            "Hello": "Привіт",
+            "Thank you": "Дякую",
+            "Yes": "Так",
+            "No": "Ні"
         ],
         "ja": [
             "Hello": "こんにちは",
